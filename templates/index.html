@@ -121,26 +121,47 @@
 function showFields() {
   const m = document.getElementById('method').value;
 
+  // First, disable all inputs within method-specific fields
+  document.querySelectorAll('.method-fields input').forEach(input => {
+    input.disabled = true;
+  });
+
   document.querySelectorAll('.method-fields').forEach(el => {
     el.style.display = 'none';
   });
 
   if (m === 'bisection' || m === 'regula') {
-    document.getElementById('endpoints').style.display = 'block';
+    const div = document.getElementById('endpoints');
+    div.style.display = 'block';
+    div.querySelectorAll('input').forEach(input => input.disabled = false);
   }
   else if (m === 'secant') {
-    document.getElementById('two_guesses').style.display = 'block';
+    const div = document.getElementById('two_guesses');
+    div.style.display = 'block';
+    div.querySelectorAll('input').forEach(input => input.disabled = false);
   }
   else if (m === 'newton') {
-    document.getElementById('one_guess').style.display = 'block';
+    const div = document.getElementById('one_guess');
+    div.style.display = 'block';
+    div.querySelectorAll('input').forEach(input => input.disabled = false);
   }
   else if (m === 'fixed') {
-    document.getElementById('one_guess').style.display = 'block';
-    document.getElementById('fixed_g').style.display = 'block';
+    const oneGuessDiv = document.getElementById('one_guess');
+    oneGuessDiv.style.display = 'block';
+    oneGuessDiv.querySelectorAll('input').forEach(input => input.disabled = false);
+
+    const fixedGDiv = document.getElementById('fixed_g');
+    fixedGDiv.style.display = 'block';
+    fixedGDiv.querySelectorAll('input').forEach(input => input.disabled = false);
   }
   else if (m === 'modified_secant') {
-    document.getElementById('one_guess').style.display = 'block';
-    document.getElementById('delta_field').style.display = 'block';
+    const oneGuessDiv = document.getElementById('one_guess');
+    oneGuessDiv.style.display = 'block';
+    oneGuessDiv.querySelectorAll('input').forEach(input => input.disabled = false);
+
+    const deltaDiv = document.getElementById('delta_field');
+    deltaDiv.style.display = 'block';
+    deltaDiv.querySelectorAll('input').forEach(input => input.disabled = false);
   }
 }
 
