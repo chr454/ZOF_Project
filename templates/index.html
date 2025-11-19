@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ZOF — Zero Of Functions Solver</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>ZOF — Zero Of Functions Solver</h1>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+      <label>Function f(x) (Python syntax, variable is x):</label>
+      <input name="func" required placeholder="e.g. x**3 - x - 2">
+
+      <label>Method:</label>
+      <select name="method" id="method" onchange="showFields()">
+        <option value="bisection">Bisection</option>
+        <option value="regula">Regula Falsi</option>
+        <option value="secant">Secant</option>
+        <option value="newton">Newton-Raphson</option>
+        <option value="fixed">Fixed Point Iteration</option>
+        <option value="modified_secant">Modified Secant</option>
+      </select>
+
+      <div id="endpoints" class="method-fields">
+        <label>Left endpoint a:</label>
+        <input name="a" type="text" placeholder="a">
+        <label>Right endpoint b:</label>
+        <input name="b" type="text" placeholder="b">
+      </div>
+
+      <div id="two_guesses" class="method-fields" style="display:none;">
+        <label>x0 (first guess):</label>
+        <input name="x0" type="text" placeholder="x0">
+        <label>x1 (second guess):</label>
+        <input name="x1" type="text" placeholder="x1">
+      </div>
+
+      <div id="one_guess" class="method-fields" style="display:none;">
+        <label>Initial guess x0:</label>
+        <input name="x0" type="text" placeholder="x0">
+      </div>
+
+      <div id="fixed_g" class="method-fields" style="display:none;">
+        <label>g(x) for fixed-point (x = g(x)):</label>
+        <input name="gfunc" placeholder="e.g. (2 + x**3)**(1/2)">
+      </div>
+
+      <div id="delta_field" class="method-fields" style="display:none;">
+        <label>Delta (for Modified Secant):</label>
+        <input name="delta" placeholder="e.g. 1e-3">
+      </div>
+
+      <label>Max iterations:</label>
+      <input name="max_iter" type="number" value="50">
+
+      <label>Tolerance:</label>
+      <input name="tol" type="text" value="1e-6">
+
+      <button type="submit">Compute</button>
+    </form>
+
+    {% if result %}
+      <h2>Result — {{ result.method }}</h2>
+      <p>Estimated root: <strong>{{ '%.12f'|format(result.root) }}</strong></p>
+      <p>Final |f(root)|: <strong>{{ '%.6e'|format(result.final_err) }}</strong></p>
+      <p>Iterations used: <strong>{{ result.iters }}</strong></p>
+
+      <h3>Iterations</h3>
+      <table>
+        <thead>
+          <tr>
+            {% for head in result.rows[0] %}
+              <th>{{ loop.index0 }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in result.rows %}
+            <tr>
+              {% for c in r %}
+                <td>
+                  {% if c is none %}
+                    -
+                  {% else %}
+                    {{ '%.6e'|format(c) if (c is number) else c }}
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+<script>
+function showFields(){
+  const m = document.getElementById('method').value;
+  document.querySelectorAll('.method-fields').forEach(el => el.style.display = 'none');
+  if (m === 'bisection' || m === 'regula') {
+    document.getElementById('endpoints').style.display = 'block';
+  } else if (m === 'secant') {
+    document.getElementById('two_guesses').style.display = 'block';
+  } else if (m === 'newton') {
+    document.getElementById('one_guess').style.display = 'block';
+  } else if (m === 'fixed') {
+    document.getElementById('fixed_g').style.display = 'block';
+    document.getElementById('one_guess').style.display = 'block';
+  } else if (m === 'modified_secant') {
+    document.getElementById('one_guess').style.display = 'block';
+    document.getElementById('delta_field').style.display = 'block';
+  }
+}
+// initialize on page load
+showFields();
+</script>
+
+</body>
+</html>
